@@ -21,7 +21,7 @@ Different versions and rules around the Gomoku game exist. To generalize, the ma
 ### Minimax algorithm
 The minimax algorithm helps find the best move, by working backwards from the end of the game. At each step it assumes that player A is trying to maximize the chances of A winning, while on the next turn player B is trying to minimize the chances of A winning (i.e., to maximize B's own chances of winning).
 
-# Resources
+## Resources
 [codecademy - Learn Flask](https://www.codecademy.com/learn/learn-flask)<br>
 [wikipedia - Go](https://en.wikipedia.org/wiki/Go_%28game%29)<br>
 [youtube - How to play Gomoku (5 in a row)](https://www.youtube.com/watch?v=-KD743yNDHc)<br>
