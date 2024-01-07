@@ -14,7 +14,7 @@ As web framework I will use python flask over python django as python flask is s
 ### Gomoku and Go
 Gomoku is also called five-in-a-row. It is played on a Go board by two players.<br>
 Go is an abstract strategy game in which the aim is to surround more territory than the opponent. The game was invented in China 4,500 years ago and is believed to be the oldest board game continuously played to the present day. The conventional board has a size of 19x19, the number of legal board positions in Go has been calculated to be approximately 2.1x10^107.<br>
-Gomoku is played with same equipment as Go, however Gomoku is impler due to five pawns in a row being sufficient for a win.
+Gomoku is played with same equipment as Go, however Gomoku is simpler due to five pawns in a row being sufficient for a win.
 
 Different versions and rules around the Gomoku game exist. To generalize, the main goal of this game is to be the first player to place five pawns in a row on the board horizontally, vertically or diagonally. Players take turns placing a pawn on the empty intersection of their choice. Black pawns start.
 
