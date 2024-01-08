@@ -8,7 +8,11 @@ I will create a static webpage as GUI so it can be deployed using github-pages. 
 As web framework I will use python flask over python django as python flask is sufficient for what I need and is faster to setup. It contains a bundle method allowing static deployment using github-pages and simple frontend which suffices for this project. 
 
 ## Use
-...
+```
+flask --app server run
+```
+
+Launch with hot-reload `flask --app server --debug run`.
 
 ## Preliminary Notions
 ### Gomoku and Go
