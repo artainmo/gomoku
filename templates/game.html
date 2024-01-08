@@ -3,30 +3,42 @@
 {% block base %}
 <h1>Gomoku</h1>
 <table cellpadding="0" cellspacing="0">
-	<tr>
-		<td><img src="../static/imgs/go_board_up_left_black.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_up_black.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_up.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_up_right.png" width={{board_size}} height={{board_size}}/></td>
-	</tr>
-	<tr>
-		<td><img src="../static/imgs/go_board_left_black.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_mid.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_mid_white.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_right.png" width={{board_size}} height={{board_size}}/></td>
-	</tr>
-	<tr>
-		<td><img src="../static/imgs/go_board_left.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_mid.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_mid_black.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_right_white.png" width={{board_size}} height={{board_size}}/></td>
-	</tr>
-	<tr>
-		<td><img src="../static/imgs/go_board_down_left.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_down.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_down.png" width={{board_size}} height={{board_size}}/></td>
-		<td><img src="../static/imgs/go_board_down_right_white.png" width={{board_size}} height={{board_size}}/></td>
-	</tr>
+	{% for row in range(19) %}
+		<tr>
+			{% for col in range(19) %}
+				<td>
+					{% if row == 0 and col == 0 %}
+						<img src="../static/imgs/go_board_up_left.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% elif row == 0 and col == 18 %}
+						<img src="../static/imgs/go_board_up_right.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% elif row == 0 %}
+						<img src="../static/imgs/go_board_up.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% elif row == 18 and col == 0 %}
+						<img src="../static/imgs/go_board_down_left.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% elif row == 18 and col == 18 %}
+						<img src="../static/imgs/go_board_down_right.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% elif row == 18 %}
+						<img src="../static/imgs/go_board_down.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% elif col == 0 %}
+						<img src="../static/imgs/go_board_left.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% elif col == 18 %}
+						<img src="../static/imgs/go_board_right.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% else %}
+						<img src="../static/imgs/go_board_mid.png" 
+									width={{board_size}} height={{board_size}}/>
+					{% endif %}
+				</td>
+			{% endfor %}
+		</tr>
+	{% endfor %}
 </table>
 
 {% endblock %}
