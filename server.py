@@ -37,4 +37,4 @@ def index():
             col = int(request.args.get('col'))
             board.set_position(row, col, turn)
             turn = 'black' if turn == 'white' else 'white'
-    return render_template("game.html", board_size=40, board=board, turn=turn)
+    return render_template("game.html", board_size=45, board=board, turn=turn)
