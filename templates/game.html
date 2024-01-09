@@ -170,9 +170,9 @@
 	<script>
 		var timer = 0;
 		x = setInterval(function() {
-			timer += 1;
-			document.getElementById("timer").innerHTML = "Time: " + timer.toString();
-		}, 1000);
+			timer += 0.1;
+			document.getElementById("timer").innerHTML = "Time: " + timer.toFixed(1).toString();
+		}, 100);
 	</script>
 {% endif%}
 {% endblock %}
