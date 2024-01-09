@@ -20,14 +20,21 @@ class Board():
         self.positions[row][col] = pawn_value #None, white or black
 
 board = Board()
-turn = 0
+turn = None
 
 @app.route('/', methods=["GET", "POST"])
 def index():
+    global board
+    global turn
     if request.method == "POST":
-        global turn
-        turn += 1
-        row = int(request.args.get('row'))
-        col = int(request.args.get('col'))
-        board.set_position(row, col, 'white' if turn % 2 else 'black')
-    return render_template("game.html", board_size=40, board=board)
+        if request.args.get('state') == "START":
+            turn = 'white'
+        elif request.args.get('state') == "STOP":
+            board = Board()
+            turn = None
+        elif turn:
+            row = int(request.args.get('row'))
+            col = int(request.args.get('col'))
+            board.set_position(row, col, turn)
+            turn = 'black' if turn == 'white' else 'white'
+    return render_template("game.html", board_size=40, board=board, turn=turn)

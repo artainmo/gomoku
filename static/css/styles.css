@@ -1,8 +1,16 @@
 body {
-	background-color:#A67831;
+	background-color:#C4AF9A;
 }
 
 tr {
-	font-size: 0px; 
+	font-size: 0px;
 	line-height: 0px;
+}
+
+input[type=submit] {
+    padding:10px 30px;
+    background:#B4654A;
+    border:0;
+    cursor:pointer;
+    border-radius: 7px;
 }
