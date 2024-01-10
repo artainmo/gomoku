@@ -20,7 +20,7 @@
 		<tr>
 			{% for col in range(19) %}
 				<td>
-					<form action="{{ url_for('index', row=row, col=col) }}" method="POST">
+					<form action="{{ url_for('place_pawn', row=row, col=col) }}" method="POST">
 						{% if row == 0 and col == 0 %}
 							{% if board.get_position_value(row, col) == None %}
 								<input type="image"
@@ -157,11 +157,11 @@
 <br>
 <br>
 {% if turn %}
-	<form action="{{ url_for('index', state='STOP') }}" method="POST" class="center-screen">
+	<form action="{{ url_for('stop') }}" method="GET" class="center-screen">
 		<input type="submit" value="Stop Game">
 	</form>
 {% else %}
-	<form action="{{ url_for('index', state='START') }}" method="POST" class="center-screen">
+	<form action="{{ url_for('start') }}" method="GET" class="center-screen">
 		<input type="submit" value="Start Game">
 	</form>
 {% endif %}
