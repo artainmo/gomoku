@@ -4,17 +4,15 @@
 
 Gomoku game website. Using min-max AI algorithm to simulate a dominant gomoku player.
 
-I will create a static webpage as GUI so it can be deployed using github-pages. Also I will use python as it is more convenient for algorithm/AI projects.<br>
-As web framework I will use python flask over python django as python flask is sufficient for what I need and is faster to setup. It contains a bundle method allowing static deployment using github-pages and simple frontend which suffices for this project.
+I will use python as it is more convenient for algorithm/AI projects.<br>
+As web framework I will use python flask over python django as python flask is sufficient for what I need and is faster to setup.
 
 ## Use
-```
-flask --app server run
-```
+Run flask app on 127.0.0.1:5000: `flask --app server run`.
 
-Launch with hot-reload `flask --app server --debug run`.
+Launch with hot-reload: `flask --app server --debug run`.
 
-If access to 127.0.0.1 gets denied.
+If access to 127.0.0.1 gets denied:
 * Go to 'chrome://net-internals/#sockets' and flush socket pools.
 * [Clear cache and cookies.](https://support.google.com/accounts/answer/32050?hl=en&co=GENIE.Platform%3DDesktop)
 * If necessary use a different port using associated flag `flask run --port 8000`.
