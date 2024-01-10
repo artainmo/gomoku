@@ -63,7 +63,7 @@ def place_pawn():
         turn = 'black' if turn == 'white' else 'white'
     else:
         return ('', 204) #Don't return anything if no pawn is placed
-    if verify_winning_alignment(board, 'black' if turn == 'white' else 'white'):
-        win = 'black' if turn == 'white' else 'white'
+    if verify_winning_alignment(board, turn): #verify previous color to give chance to losing color of capturing a pair and breaking alignment of winning color
+        win = turn
         turn = None
     return redirect(url_for('index'))
