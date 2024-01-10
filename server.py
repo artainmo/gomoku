@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
-from src.verify_pawns import verify_winning_alignment, verify_capture
+from src.verify_pawns import verify_winning_alignment, verify_capture, \
+            verify_captured_position
 
 app = Flask(__name__)
 
@@ -62,7 +63,8 @@ def place_pawn():
     starting_time = 0
     row = int(request.args.get('row'))
     col = int(request.args.get('col'))
-    if turn and board.get_position_value(row, col) == None:
+    if turn and board.get_position_value(row, col) == None and \
+                not verify_captured_position(board, turn, row, col):
         board.set_position(row, col, turn)
         if verify_capture(board, turn):
             captures[turn] += 1
