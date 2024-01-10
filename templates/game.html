@@ -12,8 +12,11 @@
 		<h1>Gomoku</h1>
 	{% endif %}
 	{% if turn %}
-	<h1 id="timer" class="align-right">
+	<h1 id="timer" class="align-middle">
 		Time: 0
+	</h1>
+	<h1 class="align-right">
+		Captures: {{ captures[turn] }}
 	</h1>
 	{% endif %}
 </div>

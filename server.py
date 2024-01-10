@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from src.verify_pawns import verify_winning_alignment
+from src.verify_pawns import verify_winning_alignment, verify_capture
 
 app = Flask(__name__)
 
@@ -27,11 +27,12 @@ class Board():
 board = Board()
 turn = None
 win = None
+captures = { "white": 0, "black": 0 }
 
 @app.route('/', methods=["GET", "POST"])
 def index():
     return render_template("game.html", board_size=45, board=board,
-                turn=turn, win=win)
+                turn=turn, win=win, captures=captures)
 
 @app.route('/start')
 def start():
@@ -46,9 +47,12 @@ def stop():
     global turn
     global board
     global win
+    global captures
     board = Board()
     turn = None
     win = None
+    captures["white"] = 0
+    captures["black"] = 0
     return redirect(url_for('index'))
 
 @app.route('/place_pawn', methods=["POST"])
@@ -60,6 +64,8 @@ def place_pawn():
     col = int(request.args.get('col'))
     if turn and board.get_position_value(row, col) == None:
         board.set_position(row, col, turn)
+        if verify_capture(board, turn):
+            captures[turn] += 1
         turn = 'black' if turn == 'white' else 'white'
     else:
         return ('', 204) #Don't return anything if no pawn is placed
