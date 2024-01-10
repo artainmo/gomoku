@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from src.verify_pawns import verify_winning_alignment
 
 app = Flask(__name__)
 
@@ -7,48 +8,62 @@ class Board():
         self.rows = 19
         self.cols = 19
         self.positions = []
-        for i in range(19):
+        for i in range(self.rows):
             row = []
-            for l in range(19):
+            for l in range(self.cols):
                 row.append(None)
             self.positions.append(row)
 
     def get_position_value(self, row, col):
+        if row < 0 or row > 18 or col < 0 or col > 18:
+            return None
         return self.positions[row][col]
 
     def set_position(self, row, col, pawn_value):
+        if row < 0 or row > 18 or col < 0 or col > 18:
+            return
         self.positions[row][col] = pawn_value #None, white or black
 
 board = Board()
 turn = None
+win = None
 
 @app.route('/', methods=["GET", "POST"])
 def index():
-    return render_template("game.html", board_size=45, board=board, turn=turn)
+    return render_template("game.html", board_size=45, board=board,
+                turn=turn, win=win)
 
 @app.route('/start')
 def start():
     global turn
+    global win
     turn = 'white'
+    win = None
     return redirect(url_for('index'))
 
 @app.route('/stop')
 def stop():
     global turn
     global board
+    global win
     board = Board()
     turn = None
+    win = None
     return redirect(url_for('index'))
 
 @app.route('/place_pawn', methods=["POST"])
 def place_pawn():
     global turn
+    global win
     starting_time = 0
     row = int(request.args.get('row'))
     col = int(request.args.get('col'))
-    if board.get_position_value(row, col) == None:
+    if turn and board.get_position_value(row, col) == None:
         board.set_position(row, col, turn)
         turn = 'black' if turn == 'white' else 'white'
     else:
         return ('', 204) #Don't return anything if no pawn is placed
+    if verify_winning_alignment(board, 'black' if turn == 'white' else 'white'):
+        win = 'black' if turn == 'white' else 'white'
+        turn = None
     return redirect(url_for('index'))

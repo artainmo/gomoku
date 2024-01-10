@@ -2,7 +2,9 @@
 
 {% block base %}
 <div class="container-center">
-	{% if turn %}
+	{% if win %}
+		<h1>{{win | title}} won!</h1>
+	{% elif turn %}
 		<h1 class="align-left">
 			{{turn | title}}'s turn
 		</h1>
@@ -156,7 +158,7 @@
 </table>
 <br>
 <br>
-{% if turn %}
+{% if turn or win %}
 	<form action="{{ url_for('stop') }}" method="GET" class="center-screen">
 		<input type="submit" value="Stop Game">
 	</form>
@@ -165,7 +167,6 @@
 		<input type="submit" value="Start Game">
 	</form>
 {% endif %}
-
 {% if turn %}
 	<script>
 		var timer = 0;
