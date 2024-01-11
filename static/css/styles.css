@@ -25,6 +25,16 @@ input[type=submit] {
 .container-center {
   text-align: center;
 }
+
+.inline {
+  display: inline-block;
+}
+
+.align {
+	display: inline-block;
+	margin: 17px
+}
+
 .align-left {
   display: inline-block;
   padding-right: 50px;
