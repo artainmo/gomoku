@@ -7,7 +7,7 @@ def find_score_alignment(board, color, row, col, remember):
     for rem in remember:
         if rem["row"] == row and rem["col"] == col:
             return 0
-    scores = []
+    score = 0
     next_neighbour_positions = [
         { "row": row, "col": col+1 },
         { "row": row+1, "col": col+1 },
@@ -21,22 +21,14 @@ def find_score_alignment(board, color, row, col, remember):
         # print(color, row, col, "|", neighbour["row"], neighbour["col"])
         # print(alignment, open_start, open_end, winning_hole)
         if alignment == 5:
-            scores.append(alignment ** 5)
-        if alignment == 1 and open_start and open_end:
-            scores.append(2)
-        elif alignment == 1 and (open_start or open_end):
-            scores.append(1)
+            score += alignment ** 5
         if open_start and open_end and not hole:
-            scores.append(alignment ** 3)
+            score += alignment ** 3
         elif (open_start or open_end) and not hole:
-            scores.append(alignment ** 2)
+            score += alignment ** 2
         else:
-            scores.append(alignment)
-    if all(score == 1 for score in scores): #If one pawn is alone and only open to lenghtening from one side give it a score of one
-        return 1
-    if all(score == 1 or score == 2 for score in scores): #If one pawn is alone and open to lenghtening from multiple sides give it a score of two
-        return 2
-    return sum(list(filter(lambda score: score != 1, scores))) #If pawn has alignment, only send alignment scores and not one values
+            score += alignment
+    return score
 
 def heuristic(board, color):
     score = 0
