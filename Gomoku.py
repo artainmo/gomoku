@@ -28,6 +28,7 @@ class Board():
         self.positions[row][col] = pawn_value #None, white or black
 
 board = Board()
+empty_board = True
 turn = None
 win = None
 play_against_AI = False
@@ -52,12 +53,14 @@ def stop():
     global board
     global win
     global play_against_AI
+    global empty_board
     board = Board()
     turn = None
     win = None
     board.captures["white"] = 0
     board.captures["black"] = 0
     play_against_AI = False
+    empty_board = True
     return redirect(url_for('index'))
 
 @app.route('/place_pawn', methods=["POST"])
@@ -84,5 +87,10 @@ def place_pawn():
 
 @app.route('/AI_play', methods=["POST"])
 def AI_play():
-    next_move = run_minimax(board, 1)
+    global empty_board
+    if empty_board:
+        empty_board = False
+        next_move = (board.rows//2, board.cols//2)
+    else:
+        next_move = run_minimax(board, 1)
     return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1]), code=307) #code set to 307 allows redirect to POST route
