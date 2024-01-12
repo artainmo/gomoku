@@ -3,42 +3,45 @@ from src.verify_pawns import verify_winning_alignment, verify_capture, \
             verify_captured_position, num_free_three_alignments, \
             alignments_with_max_one_hole
 
+def find_score_alignment(board, color, row, col, remember):
+    for rem in remember:
+        if rem["row"] == row and rem["col"] == col:
+            return 0
+    scores = []
+    next_neighbour_positions = [
+        { "row": row, "col": col+1 },
+        { "row": row+1, "col": col+1 },
+        { "row": row+1, "col": col },
+        { "row": row+1, "col": col-1 }
+    ]
+    for neighbour in next_neighbour_positions:
+        alignment, open_start, open_end, winning_hole = \
+                    alignments_with_max_one_hole(board, color, row,
+                    col, neighbour["row"], neighbour["col"], remember)
+        # print(color, row, col, "|", neighbour["row"], neighbour["col"])
+        # print(alignment, open_start, open_end, winning_hole)
+        if open_start and open_end:
+            scores.append(alignment ** 3)
+        elif open_start or open_end or winning_hole:
+            scores.append(alignment ** 2)
+    if all(score == 1 for score in scores): #If one pawn is alone give it a score of one
+        return 1
+    return sum(list(filter(lambda score: score != 1, scores))) #If pawn has alignment, only send alignment scores and not one values
+
 def heuristic(board, color):
     score = 0
     #Addition all captures of our player and substract all captures of adversary
     score += board.captures[color] * 2
     score -= board.captures['white' if color == 'black' else 'black'] * 2
     #Addition all alignments (with max one hole) of our player and substract those of adversary
+    remember = []
     for row in range(board.rows):
         for col in range(board.cols):
             if board.get_position_value(row, col) == color:
-                next_neighbour_positions = [
-                    { "row": row, "col": col+1 },
-                    { "row": row+1, "col": col+1 },
-                    { "row": row+1, "col": col },
-                    { "row": row+1, "col": col-1 }
-                ]
-                for neighbour in next_neighbour_positions:
-                    alignment, open_start, open_end = alignments_with_max_one_hole(board, color, row, col,
-                        neighbour["row"], neighbour["col"])
-                    if open_start and open_end:
-                        score += alignment * 3
-                    elif open_start or open_end:
-                        score += alignment * 2
-            elif board.get_position_value(row, col) == 'white' if color == 'black' else 'black':
-                next_neighbour_positions = [
-                    { "row": row, "col": col+1 },
-                    { "row": row+1, "col": col+1 },
-                    { "row": row+1, "col": col },
-                    { "row": row+1, "col": col-1 }
-                ]
-                for neighbour in next_neighbour_positions:
-                    alignment, open_start, open_end = alignments_with_max_one_hole(board, color, row, col,
-                        neighbour["row"], neighbour["col"])
-                    if open_start and open_end:
-                        score -= alignment * 3
-                    elif open_start or open_end:
-                        score -= alignment * 2
+                score += find_score_alignment(board, color, row, col, remember)
+            elif board.get_position_value(row, col) == ('white' if color == 'black' else 'black'):
+                score -= find_score_alignment(board,
+                        'white' if color == 'black' else 'black', row, col, remember)
     return score
 
 def generate_positions(board, color):

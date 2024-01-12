@@ -73,14 +73,15 @@ def verify_captured_position(board, captured_color, row, col):
             return True
     return False
 
-def alignments_with_max_one_hole(board, color, row1, col1, row2, col2):
+def alignments_with_max_one_hole(board, color, row1, col1, row2, col2, remember=None):
     alignment = 1
     empty_position = 1
-    row_angle = row2 - row1
-    col_angle = col2 - col1
+    row_angle = abs(row2 - row1)
+    col_angle = abs(col2 - col1)
     row0 = row1 - row_angle
     col0 = col1 - col_angle
-    while board.get_position_value(row0, col0) == color or empty_position:
+    while board.get_position_value(row0, col0) == color or \
+                (board.get_position_value(row0, col0) == None and empty_position):
         if board.get_position_value(row0, col0) != color:
             if board.get_position_value(row0-row_angle, col0-col_angle) == color:
                 empty_position -= 1
@@ -90,13 +91,16 @@ def alignments_with_max_one_hole(board, color, row1, col1, row2, col2):
         alignment += 1
         row0 -= row_angle
         col0 -= col_angle
-    while board.get_position_value(row2, col2) == color or empty_position:
+    while board.get_position_value(row2, col2) == color or \
+                (board.get_position_value(row2, col2) == None and empty_position):
         if board.get_position_value(row2, col2) != color:
             if board.get_position_value(row2+row_angle, col2+col_angle) == color:
                 empty_position -= 1
                 alignment -= 1
             else:
                 break
+        if remember != None: #memorize the reviewed positions that come next to avoid reviewing them again
+            remember.append({"row": row2, "col": col2})
         alignment += 1
         row2 += row_angle
         col2 += col_angle
@@ -108,10 +112,15 @@ def alignments_with_max_one_hole(board, color, row1, col1, row2, col2):
         open_end = True
     else:
         open_end = False
-    return alignment, open_start, open_end
+    if empty_position == 0 and alignment == 4:
+        winning_hole = True
+    else:
+        winning_hole = False
+    return alignment, open_start, open_end, winning_hole
 
 def free_three_alignment(board, color, row1, col1, row2, col2):
-    alignment, open_start, open_end = alignments_with_max_one_hole(board, color, row1, col1, row2, col2)
+    alignment, open_start, open_end, winning_hole = \
+                alignments_with_max_one_hole(board, color, row1, col1, row2, col2)
     if alignment == 3 and open_start and open_end:
         return True
     return False
