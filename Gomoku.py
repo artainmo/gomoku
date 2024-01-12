@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from src.verify_pawns import verify_winning_alignment, verify_capture, \
             verify_captured_position, num_free_three_alignments
-from src.algo import minimax, heuristic
+from src.algo import run_minimax, heuristic
 
 app = Flask(__name__)
 
@@ -41,7 +41,7 @@ def index():
 def start():
     global turn
     global play_against_AI
-    turn = 'white'
+    turn = 'black'
     if request.args.get('adversary') == 'AI':
         play_against_AI = True
     return redirect(url_for('index'))
@@ -84,6 +84,5 @@ def place_pawn():
 
 @app.route('/AI_play', methods=["POST"])
 def AI_play():
-    score = minimax(board, 1)
-    print(score)
-    return redirect(url_for('place_pawn', row=1, col=1), code=307) #code set to 307 allows redirect to POST route
+    next_move = run_minimax(board, 2)
+    return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1]), code=307) #code set to 307 allows redirect to POST route
