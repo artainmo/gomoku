@@ -84,5 +84,5 @@ def place_pawn():
 
 @app.route('/AI_play', methods=["POST"])
 def AI_play():
-    next_move = run_minimax(board, 2)
+    next_move = run_minimax(board, 1)
     return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1]), code=307) #code set to 307 allows redirect to POST route

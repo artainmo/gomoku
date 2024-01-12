@@ -15,24 +15,34 @@ def find_score_alignment(board, color, row, col, remember):
         { "row": row+1, "col": col-1 }
     ]
     for neighbour in next_neighbour_positions:
-        alignment, open_start, open_end, winning_hole = \
+        alignment, open_start, open_end, hole = \
                     alignments_with_max_one_hole(board, color, row,
                     col, neighbour["row"], neighbour["col"], remember)
         # print(color, row, col, "|", neighbour["row"], neighbour["col"])
         # print(alignment, open_start, open_end, winning_hole)
-        if open_start and open_end:
+        if alignment == 5:
+            scores.append(alignment ** 5)
+        if alignment == 1 and open_start and open_end:
+            scores.append(2)
+        elif alignment == 1 and (open_start or open_end):
+            scores.append(1)
+        if open_start and open_end and not hole:
             scores.append(alignment ** 3)
-        elif open_start or open_end or winning_hole:
+        elif (open_start or open_end) and not hole:
             scores.append(alignment ** 2)
-    if all(score == 1 for score in scores): #If one pawn is alone give it a score of one
+        else:
+            scores.append(alignment)
+    if all(score == 1 for score in scores): #If one pawn is alone and only open to lenghtening from one side give it a score of one
         return 1
+    if all(score == 1 or score == 2 for score in scores): #If one pawn is alone and open to lenghtening from multiple sides give it a score of two
+        return 2
     return sum(list(filter(lambda score: score != 1, scores))) #If pawn has alignment, only send alignment scores and not one values
 
 def heuristic(board, color):
     score = 0
     #Addition all captures of our player and substract all captures of adversary
-    score += board.captures[color] * 2
-    score -= board.captures['white' if color == 'black' else 'black'] * 2
+    score += board.captures[color] ** 2
+    score -= board.captures['white' if color == 'black' else 'black'] ** 2
     #Addition all alignments (with max one hole) of our player and substract those of adversary
     remember = []
     for row in range(board.rows):
@@ -72,12 +82,12 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         for [new_position_board, move] in generate_positions(board, 'black'): #We go over all next playable positions.
             eval = minimax(new_position_board, depth-1, False, alpha, beta) #We recursively call minimax to search for moves of next turns.
             if eval > maxEval:
-                print("--------------")
-                print("Depth: ", depth)
-                print("maxEval: ", eval)
-                print("alpha: ", eval)
-                print("beta: ", beta)
-                print("--------------")
+                # print("--------------")
+                # print("Depth: ", depth)
+                # print("maxEval: ", eval)
+                # print("alpha: ", eval)
+                # print("beta: ", beta)
+                # print("--------------")
                 maxEval = eval #We memorize the best move for us which has highest score from heuristic function.
                 next_move = move
                 alpha = eval #Alpha refers to best score/move(s) of our player. While beta refers to worst score or best move of adversary.
@@ -94,12 +104,12 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         for [new_position_board, move] in generate_positions(board, 'white'):
             eval = minimax(new_position_board, depth-1, True, alpha, beta)
             if eval < minEval:
-                print("--------------")
-                print("Depth: ", depth)
-                print("minEval: ", eval)
-                print("alpha: ", alpha)
-                print("beta: ", eval)
-                print("--------------")
+                # print("--------------")
+                # print("Depth: ", depth)
+                # print("minEval: ", eval)
+                # print("alpha: ", alpha)
+                # print("beta: ", eval)
+                # print("--------------")
                 minEval = eval #We memorize the best move for the adversary which has lowest score from heuristic function.
                 beta = eval
                 #The highest beta value or worst move for adversary will become the best move for our player.

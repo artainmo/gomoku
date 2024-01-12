@@ -112,14 +112,14 @@ def alignments_with_max_one_hole(board, color, row1, col1, row2, col2, remember=
         open_end = True
     else:
         open_end = False
-    if empty_position == 0 and alignment == 4:
-        winning_hole = True
+    if empty_position == 0:
+        hole = True
     else:
-        winning_hole = False
-    return alignment, open_start, open_end, winning_hole
+        hole = False
+    return alignment, open_start, open_end, hole
 
 def free_three_alignment(board, color, row1, col1, row2, col2):
-    alignment, open_start, open_end, winning_hole = \
+    alignment, open_start, open_end, hole = \
                 alignments_with_max_one_hole(board, color, row1, col1, row2, col2)
     if alignment == 3 and open_start and open_end:
         return True
