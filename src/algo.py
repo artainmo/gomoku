@@ -6,8 +6,8 @@ from src.verify_pawns import verify_winning_alignment, verify_capture, \
 def heuristic(board, color):
     score = 0
     #Addition all captures of our player and substract all captures of adversary
-    score += board.captures[color] ** 2
-    score -= board.captures['white' if color == 'black' else 'black'] ** 2
+    score += board.captures[color] * 2
+    score -= board.captures['white' if color == 'black' else 'black'] * 2
     #Addition all alignments (with max one hole) of our player and substract those of adversary
     for row in range(board.rows):
         for col in range(board.cols):
@@ -19,8 +19,12 @@ def heuristic(board, color):
                     { "row": row+1, "col": col-1 }
                 ]
                 for neighbour in next_neighbour_positions:
-                    score += alignments_with_max_one_hole(board, color, row, col,
-                        neighbour["row"], neighbour["col"]) ** 2
+                    alignment, open_start, open_end = alignments_with_max_one_hole(board, color, row, col,
+                        neighbour["row"], neighbour["col"])
+                    if open_start and open_end:
+                        score += alignment * 3
+                    elif open_start or open_end:
+                        score += alignment * 2
             elif board.get_position_value(row, col) == 'white' if color == 'black' else 'black':
                 next_neighbour_positions = [
                     { "row": row, "col": col+1 },
@@ -29,8 +33,12 @@ def heuristic(board, color):
                     { "row": row+1, "col": col-1 }
                 ]
                 for neighbour in next_neighbour_positions:
-                    score -= alignments_with_max_one_hole(board, color, row, col,
-                        neighbour["row"], neighbour["col"]) ** 2
+                    alignment, open_start, open_end = alignments_with_max_one_hole(board, color, row, col,
+                        neighbour["row"], neighbour["col"])
+                    if open_start and open_end:
+                        score -= alignment * 3
+                    elif open_start or open_end:
+                        score -= alignment * 2
     return score
 
 def generate_positions(board, color):
@@ -58,6 +66,12 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         for new_position_board in generate_positions(board, 'black'): #We go over all next playable positions.
             eval = minimax(new_position_board, depth-1, False, alpha, beta) #We recursively call minimax to search for moves of next turns.
             if eval > maxEval:
+                print("--------------")
+                print("Depth: ", depth)
+                print("maxEval: ", eval)
+                print("alpha: ", eval)
+                print("beta: ", beta)
+                print("--------------")
                 maxEval = eval #We memorize the best move for us which has highest score from heuristic function.
                 alpha = eval #Alpha refers to best score/move(s) of our player. While beta refers to worst score or best move of adversary.
                 #The lowest alpha value or worst score/move of our player will become the best move (worst score) of adversary which beta refers to.
@@ -73,6 +87,12 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         for new_position_board in generate_positions(board, 'white'):
             eval = minimax(new_position_board, depth-1, True, alpha, beta)
             if eval < minEval:
+                print("--------------")
+                print("Depth: ", depth)
+                print("minEval: ", eval)
+                print("alpha: ", alpha)
+                print("beta: ", eval)
+                print("--------------")
                 minEval = eval #We memorize the best move for the adversary which has lowest score from heuristic function.
                 beta = eval
                 #The highest beta value or worst move for adversary will become the best move for our player.

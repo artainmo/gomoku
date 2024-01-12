@@ -100,12 +100,19 @@ def alignments_with_max_one_hole(board, color, row1, col1, row2, col2):
         alignment += 1
         row2 += row_angle
         col2 += col_angle
-    return alignment
+    if board.get_position_value(row0, col0) == None:
+        open_start = True
+    else:
+        open_start = False
+    if board.get_position_value(row2, col2) == None:
+        open_end = True
+    else:
+        open_end = False
+    return alignment, open_start, open_end
 
 def free_three_alignment(board, color, row1, col1, row2, col2):
-    alignment = alignments_with_max_one_hole(board, color, row1, col1, row2, col2)
-    if alignment == 3 and board.get_position_value(row0, col0) == None and \
-                board.get_position_value(row2, col2) == None:
+    alignment, open_start, open_end = alignments_with_max_one_hole(board, color, row1, col1, row2, col2)
+    if alignment == 3 and open_start and open_end:
         return True
     return False
 
