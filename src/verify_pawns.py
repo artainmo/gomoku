@@ -73,18 +73,13 @@ def verify_captured_position(board, captured_color, row, col):
             return True
     return False
 
-def free_three_alignment(board, color, row1, col1, row2, col2):
+def alignments_with_max_one_hole(board, color, row1, col1, row2, col2):
     alignment = 1
     empty_position = 1
     row_angle = row2 - row1
     col_angle = col2 - col1
     row0 = row1 - row_angle
     col0 = col1 - col_angle
-    print("------------------")
-    print(row0, col0, board.get_position_value(row0, col0))
-    print(row1, col1, board.get_position_value(row1, col1))
-    print(row2, col2, board.get_position_value(row2, col2))
-    print(board.get_position_value(row0, col0), color, board.get_position_value(row0, col0) == color)
     while board.get_position_value(row0, col0) == color or empty_position:
         if board.get_position_value(row0, col0) != color:
             if board.get_position_value(row0-row_angle, col0-col_angle) == color:
@@ -105,11 +100,10 @@ def free_three_alignment(board, color, row1, col1, row2, col2):
         alignment += 1
         row2 += row_angle
         col2 += col_angle
-    if alignment > 1:
-        print(color)
-        print(row1, col1)
-        print(alignment)
-    print("------------------")
+    return alignment
+
+def free_three_alignment(board, color, row1, col1, row2, col2):
+    alignment = alignments_with_max_one_hole(board, color, row1, col1, row2, col2)
     if alignment == 3 and board.get_position_value(row0, col0) == None and \
                 board.get_position_value(row2, col2) == None:
         return True
