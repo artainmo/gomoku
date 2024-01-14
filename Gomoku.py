@@ -83,6 +83,7 @@ def place_pawn():
                 or verify_winning_alignment(board, turn)): #verify previous color to give chance to losing color of capturing a pair and breaking alignment of winning color
         win = turn
         turn = None
+    print(heuristic(board, 'black'))
     return redirect(url_for('index'))
 
 @app.route('/AI_play', methods=["POST"])
@@ -92,5 +93,5 @@ def AI_play():
         empty_board = False
         next_move = (board.rows//2, board.cols//2)
     else:
-        next_move = run_minimax(board, 1)
+        next_move = run_minimax(board, 2)
     return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1]), code=307) #code set to 307 allows redirect to POST route

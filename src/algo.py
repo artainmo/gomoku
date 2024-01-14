@@ -18,14 +18,14 @@ def find_score_alignment(board, color, row, col, remember):
         alignment, open_start, open_end, hole = \
                     alignments_with_max_one_hole(board, color, row,
                     col, neighbour["row"], neighbour["col"], remember)
-        # print(color, row, col, "|", neighbour["row"], neighbour["col"])
-        # print(alignment, open_start, open_end, winning_hole)
+        print(color, row, col, "|", neighbour["row"], neighbour["col"])
+        print(alignment, open_start, open_end, hole)
         if alignment == 5:
-            score += alignment ** 5
+            score += alignment ** (alignment*3)
         if open_start and open_end and not hole:
-            score += alignment ** 3
+            score += alignment ** (alignment*2)
         elif (open_start or open_end) and not hole:
-            score += alignment ** 2
+            score += alignment ** alignment
         else:
             score += alignment
     return score
@@ -33,8 +33,8 @@ def find_score_alignment(board, color, row, col, remember):
 def heuristic(board, color):
     score = 0
     #Addition all captures of our player and substract all captures of adversary
-    score += board.captures[color] ** 2
-    score -= board.captures['white' if color == 'black' else 'black'] ** 2
+    score += board.captures[color] ** board.captures[color]
+    score -= board.captures['white' if color == 'black' else 'black'] ** board.captures['white' if color == 'black' else 'black']
     #Addition all alignments (with max one hole) of our player and substract those of adversary
     remember = []
     for row in range(board.rows):
@@ -82,12 +82,12 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         for [new_position_board, move] in generate_positions(board, 'black'): #We go over all next playable positions.
             eval = minimax(new_position_board, depth-1, False, alpha, beta) #We recursively call minimax to search for moves of next turns.
             if eval > maxEval:
-                print("--------------")
-                print("Depth: ", depth)
-                print("maxEval: ", eval)
-                print("alpha: ", eval)
-                print("beta: ", beta)
-                print("--------------")
+                # print("--------------")
+                # print("Depth: ", depth)
+                # print("maxEval: ", eval)
+                # print("alpha: ", eval)
+                # print("beta: ", beta)
+                # print("--------------")
                 maxEval = eval #We memorize the best move for us which has highest score from heuristic function.
                 next_move = move
                 alpha = eval #Alpha refers to best score/move(s) of our player. While beta refers to worst score or best move of adversary.
@@ -104,12 +104,12 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         for [new_position_board, move] in generate_positions(board, 'white'):
             eval = minimax(new_position_board, depth-1, True, alpha, beta)
             if eval < minEval:
-                print("--------------")
-                print("Depth: ", depth)
-                print("minEval: ", eval)
-                print("alpha: ", alpha)
-                print("beta: ", eval)
-                print("--------------")
+                # print("--------------")
+                # print("Depth: ", depth)
+                # print("minEval: ", eval)
+                # print("alpha: ", alpha)
+                # print("beta: ", eval)
+                # print("--------------")
                 minEval = eval #We memorize the best move for the adversary which has lowest score from heuristic function.
                 beta = eval
                 #The highest beta value or worst move for adversary will become the best move for our player.

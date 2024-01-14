@@ -76,24 +76,25 @@ def verify_captured_position(board, captured_color, row, col):
 def alignments_with_max_one_hole(board, color, row1, col1, row2, col2, remember=None):
     alignment = 1
     empty_position = 1
-    row_angle = abs(row2 - row1)
-    col_angle = abs(col2 - col1)
+    row_angle = row2 - row1
+    col_angle = col2 - col1
     row0 = row1 - row_angle
     col0 = col1 - col_angle
-    while board.get_position_value(row0, col0) == color or \
-                (board.get_position_value(row0, col0) == None and empty_position):
-        if board.get_position_value(row0, col0) != color:
-            if board.get_position_value(row0-row_angle, col0-col_angle) == color:
-                empty_position -= 1
-                alignment -= 1
-            else:
-                break
-        alignment += 1
-        row0 -= row_angle
-        col0 -= col_angle
+    if remember == None:
+        while board.get_position_value(row0, col0) == color or \
+                    (board.get_position_value(row0, col0) == None and empty_position):
+            if board.get_position_value(row0, col0) == None:
+                if board.get_position_value(row0-row_angle, col0-col_angle) == color:
+                    empty_position -= 1
+                    alignment -= 1
+                else:
+                    break
+            alignment += 1
+            row0 -= row_angle
+            col0 -= col_angle
     while board.get_position_value(row2, col2) == color or \
                 (board.get_position_value(row2, col2) == None and empty_position):
-        if board.get_position_value(row2, col2) != color:
+        if board.get_position_value(row2, col2) == None:
             if board.get_position_value(row2+row_angle, col2+col_angle) == color:
                 empty_position -= 1
                 alignment -= 1
