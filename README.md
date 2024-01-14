@@ -39,3 +39,4 @@ by preventing computations that are not necessary as they would not affect the o
 [youtube - What is the Minimax Algorithm? - Artificial Intelligence](https://www.youtube.com/watch?v=KU9Ch59-4vw)<br>
 [youtube - Algorithms Explained – minimax and alpha-beta pruning](https://www.youtube.com/watch?v=l-hh51ncgDI)<br>
 [Iowa State University thesis - New Heuristic Algorithm to improve the Minimax for Gomoku Artificial Intelligence](https://dr.lib.iastate.edu/server/api/core/bitstreams/39a805d5-8f5b-41e6-b07c-19c07229f813/content)<br>
+[UCT-ADP Progressive Bias Algorithm for Solving Gomoku](https://arxiv.org/pdf/1912.05407.pdf)<br>

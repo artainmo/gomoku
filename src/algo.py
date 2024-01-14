@@ -1,40 +1,90 @@
 import copy
 from src.verify_pawns import verify_winning_alignment, verify_capture, \
             verify_captured_position, num_free_three_alignments, \
-            alignments_with_max_one_hole
+            alignment_score
+
+visualize = True
+potential_moves = []
 
 def find_score_alignment(board, color, row, col, remember):
     for rem in remember:
         if rem["row"] == row and rem["col"] == col:
             return 0
-    score = 0
+    scores = []
     next_neighbour_positions = [
         { "row": row, "col": col+1 },
-        { "row": row+1, "col": col+1 },
-        { "row": row+1, "col": col },
-        { "row": row+1, "col": col-1 }
+        { "row": row+1, "col": col+1},
+        { "row": row+1, "col": col},
+        { "row": row+1, "col": col-1},
+        { "row": row, "col": col-1},
+        { "row": row-1, "col": col-1},
+        { "row": row-1, "col": col}
     ]
     for neighbour in next_neighbour_positions:
-        alignment, open_start, open_end, hole = \
-                    alignments_with_max_one_hole(board, color, row,
+        alignment, hole, open_start, open_end, openForFive, decay_factor = \
+                    alignment_score(board, color, row,
                     col, neighbour["row"], neighbour["col"], remember)
-        print(color, row, col, "|", neighbour["row"], neighbour["col"])
-        print(alignment, open_start, open_end, hole)
-        if alignment == 5:
-            score += alignment ** (alignment*3)
-        if open_start and open_end and not hole:
-            score += alignment ** (alignment*2)
-        elif (open_start or open_end) and not hole:
-            score += alignment ** alignment
-        else:
-            score += alignment
-    return score
+        if not openForFive:
+            continue
+        ## "UCT-ADP Progressive Bias Algorithm for Solving Gomoku" (https://arxiv.org/pdf/1912.05407.pdf)
+        ## page 3, hard-coding heuristic patterns
+        # if alignment >= 5 and hole == 0:
+        #     score += 10 ** 5
+        # elif alignment == 4 and hole == 0 and open_start and open_end:
+        #     score += 10 ** 4
+        # elif alignment == 4 and hole == 0 and (open_start or open_end):
+        #     score += 10 ** (4-1)
+        # elif alignment == 4 and hole == 1 and (open_start or open_end):
+        #     score += (10 ** (4-1)) * 0.9
+        # elif alignment == 3 and hole == 0 and decay_factor >= 2:
+        #     score += 10 ** 3
+        # elif alignment == 3 and hole == 0 and open_start and open_end:
+        #     score += (10 ** 3) * 0.9
+        # elif alignment == 3 and hole == 0 and (open_start or open_end):
+        #     score += 10 * (3-1)
+        # elif alignment == 3 and hole == 1 and open_start and open_end:
+        #     score += (10 ** 3) * 0.9
+        # elif alignment == 3 and hole == 1 and (open_start or open_end):
+        #     score += (10 ** (3-1)) * 0.9
+        # elif alignment == 3 and hole == 2 and open_start and open_end:
+        #     score += 10 * (3-1)
+        # elif alignment == 2 and hole == 0 and decay_factor >= 3:
+        #     score += 10 * 2
+        ## Using formula to handle all 32 cases instead
+        base = 10
+        power = alignment
+        modulate = 1
+        if (open_start and not open_end) or (not open_start and open_end):
+            power -= 1
+        elif decay_factor < 5 - alignment:
+            modulate -= 0.1
+        if hole == 1:
+            modulate -= 0.1
+        if hole == 2:
+            power -= 1
+        score = (base ** power) * modulate
+        scores.append(score)
+        if visualize and color == "black":
+            global potential_moves
+            potential_moves.append({
+                "color": color,
+                "position": (row, col),
+                "direcion": (neighbour["row"]-row, neighbour["col"]-col),
+                "alignment": alignment,
+                "holes": hole,
+                "open start": open_start,
+                "open end": open_end,
+                "open for five": openForFive,
+                "closest closing alignment": decay_factor,
+                "score": score
+            })
+    return max(scores)
 
 def heuristic(board, color):
     score = 0
     #Addition all captures of our player and substract all captures of adversary
-    score += board.captures[color] ** board.captures[color]
-    score -= board.captures['white' if color == 'black' else 'black'] ** board.captures['white' if color == 'black' else 'black']
+    score += 9 ** board.captures[color]
+    score -= 9 ** board.captures['white' if color == 'black' else 'black']
     #Addition all alignments (with max one hole) of our player and substract those of adversary
     remember = []
     for row in range(board.rows):
@@ -51,9 +101,12 @@ def generate_positions(board, color):
         for col in range(board.cols):
             next_neighbour_positions = [
                 { "row": row, "col": col+1 },
-                { "row": row+1, "col": col+1 },
-                { "row": row+1, "col": col },
-                { "row": row+1, "col": col-1 }
+                { "row": row+1, "col": col+1},
+                { "row": row+1, "col": col},
+                { "row": row+1, "col": col-1},
+                { "row": row, "col": col-1},
+                { "row": row-1, "col": col-1},
+                { "row": row-1, "col": col}
             ]
             if any(board.get_position_value(neighbour["row"], neighbour["col"])
                         in ["white", "black"] for neighbour in next_neighbour_positions): #Only review positions who are next to actual stones
@@ -121,6 +174,34 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
                     break
         return minEval
 
+def print_move(move):
+    print("color: ", move["color"])
+    print("position: ", move["position"])
+    print("direcion: ", move["direcion"])
+    print("alignment: ", move["alignment"])
+    print("holes: ", move["holes"])
+    print("open start: ", move["open start"])
+    print("open end: ", move["open end"])
+    print("open for five: ", move["open for five"])
+    print("closest closing alignment: ", move["closest closing alignment"])
+    print("score: ", move["score"])
+    print()
+
 def run_minimax(board, depth):
     minimax(board, depth)
+    if visualize:
+        global potential_moves
+        print("ALL REVIEWED MOVES")
+        rem = []
+        for move in potential_moves:
+            if move["position"] not in rem:
+                rem.append(move["position"])
+                print(move["position"], end=", ")
+        print("\n")
+        print("BEST POTENTIAL MOVES")
+        potential_moves.sort(key=lambda x:x["score"], reverse=True)
+        print_move(potential_moves[0])
+        print_move(potential_moves[1])
+        print_move(potential_moves[2])
+        potential_moves = []
     return next_move

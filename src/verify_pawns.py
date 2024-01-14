@@ -80,18 +80,17 @@ def alignments_with_max_one_hole(board, color, row1, col1, row2, col2, remember=
     col_angle = col2 - col1
     row0 = row1 - row_angle
     col0 = col1 - col_angle
-    if remember == None:
-        while board.get_position_value(row0, col0) == color or \
-                    (board.get_position_value(row0, col0) == None and empty_position):
-            if board.get_position_value(row0, col0) == None:
-                if board.get_position_value(row0-row_angle, col0-col_angle) == color:
-                    empty_position -= 1
-                    alignment -= 1
-                else:
-                    break
-            alignment += 1
-            row0 -= row_angle
-            col0 -= col_angle
+    while board.get_position_value(row0, col0) == color or \
+                (board.get_position_value(row0, col0) == None and empty_position):
+        if board.get_position_value(row0, col0) == None:
+            if board.get_position_value(row0-row_angle, col0-col_angle) == color:
+                empty_position -= 1
+                alignment -= 1
+            else:
+                break
+        alignment += 1
+        row0 -= row_angle
+        col0 -= col_angle
     while board.get_position_value(row2, col2) == color or \
                 (board.get_position_value(row2, col2) == None and empty_position):
         if board.get_position_value(row2, col2) == None:
@@ -117,7 +116,10 @@ def alignments_with_max_one_hole(board, color, row1, col1, row2, col2, remember=
         hole = True
     else:
         hole = False
-    return alignment, open_start, open_end, hole
+    if remember == None:
+        return alignment, open_start, open_end, hole
+    else:
+        return alignment, open_start, open_end, hole, row0, col0, row2, col2
 
 def free_three_alignment(board, color, row1, col1, row2, col2):
     alignment, open_start, open_end, hole = \
@@ -139,3 +141,48 @@ def num_free_three_alignments(board, color, row, col):
                     neighbour["row"], neighbour["col"]):
             num += 1
     return num
+
+def alignment_open_for_five_and_future_end(board, color, row_start, col_start, row_end,
+            col_end, row_angle, col_angle, open_start, open_end, alignment, hole):
+    decay_factor1 = 0
+    decay_factor2 = 0
+    if open_start:
+        while board.get_position_value(row_start, col_start) == None or \
+                board.get_position_value(row_start, col_start) == color:
+            row_start -= row_angle
+            col_start -= row_angle
+            decay_factor1 += 1
+            if alignment + hole + decay_factor1 >= 5 and decay_factor1 > 3:
+                break
+    if open_end:
+        while board.get_position_value(row_end, col_end) == None or \
+                board.get_position_value(row_end, col_end) == color:
+            row_start += row_angle
+            col_start += row_angle
+            decay_factor2 += 1
+            if alignment + hole + decay_factor1 + decay_factor2 >= 5 and decay_factor2 > 3:
+                break
+    if alignment + hole + decay_factor1 + decay_factor2 > 4:
+        openForFive = True
+    else:
+        openForFive = False
+    return openForFive, min(decay_factor1, decay_factor2)
+
+def alignment_score(board, color, row1, col1, row2, col2, remember):
+    row_angle = row2 - row1
+    col_angle = col2 - col1
+    alignment, open_start, open_end, hole, row_start, col_start, row_end, col_end = \
+            alignments_with_max_one_hole(board, color, row1, col1, row2, col2, remember)
+    if hole:
+        hole = 1
+    else:
+        hole = 0
+    if alignment == 2 and hole and open_end:
+        if board.get_position_value(row_end+row_angle, col_end+col_angle) == color:
+            remember.append({"row": row_end+row_angle, "col": col_end+col_angle})
+            alignment += 1
+            hole += 1
+    openForFive, decay_factor = alignment_open_for_five_and_future_end(board, color,
+            row_start, col_start, row_end, col_end, row_angle, col_angle,
+            open_start, open_end, alignment, hole)
+    return alignment, hole, open_start, open_end, openForFive, decay_factor
