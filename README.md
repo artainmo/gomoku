@@ -10,7 +10,7 @@ As web framework I will use python flask over python django as python flask is s
 ## Use
 Run flask app on 127.0.0.1:5000: `flask --app Gomoku run`.
 
-Launch with hot-reload: `flask --app Gomoku --debug run`.
+Launch with hot-reload and logs from algorithm in terminal: `flask --app Gomoku --debug run`.
 
 If access to 127.0.0.1 gets denied:
 * Go to 'chrome://net-internals/#sockets' and flush socket pools.

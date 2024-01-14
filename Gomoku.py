@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 from src.verify_pawns import verify_winning_alignment, verify_capture, \
             verify_captured_position, num_free_three_alignments
-from src.algo import run_minimax, heuristic
 
 app = Flask(__name__)
+
+from src.algo import run_minimax, heuristic
 
 class Board():
     def __init__(self):

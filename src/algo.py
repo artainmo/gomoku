@@ -2,8 +2,9 @@ import copy
 from src.verify_pawns import verify_winning_alignment, verify_capture, \
             verify_captured_position, num_free_three_alignments, \
             alignment_score
+from Gomoku import app
 
-visualize = True
+visualize = app.config['DEBUG']
 potential_moves = []
 
 def find_score_alignment(board, color, row, col, remember):
@@ -15,10 +16,7 @@ def find_score_alignment(board, color, row, col, remember):
         { "row": row, "col": col+1 },
         { "row": row+1, "col": col+1},
         { "row": row+1, "col": col},
-        { "row": row+1, "col": col-1},
-        { "row": row, "col": col-1},
-        { "row": row-1, "col": col-1},
-        { "row": row-1, "col": col}
+        { "row": row+1, "col": col-1}
     ]
     for neighbour in next_neighbour_positions:
         alignment, hole, open_start, open_end, openForFive, decay_factor = \
