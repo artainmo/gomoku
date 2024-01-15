@@ -1,5 +1,5 @@
 import copy
-from src.verify_pawns import verify_winning_alignment, verify_capture, \
+from src.verify_pawns import verify_winning_alignment, verify_capture_position, \
             verify_captured_position, num_free_three_alignments, \
             alignment_score
 from Gomoku import app
@@ -61,8 +61,9 @@ def find_score_alignment(board, color, row, col, remember):
         if hole == 2:
             power -= 1
         #The two following ifs try to force AI into stopping the player from winning when he is about to
-        if color == "white" and alignment == 4 and (open_start or open_end):
-            power += 2
+        if color == "white" and alignment > 3 and (open_start or open_end):
+            power += 1
+            modulate += 1
         elif color == "white" and alignment == 3 and open_start and open_end:
             power += 1
         score += (base ** power) * modulate
@@ -103,8 +104,7 @@ def generate_positions(board, color):
                             num_free_three_alignments(board, color, row, col) < 2:
                     new_board = copy.deepcopy(board)
                     new_board.set_position(row, col, color)
-                    if verify_capture(new_board, color):
-                        new_board.captures[color] += 1
+                    new_board.captures[color] += verify_capture_position(new_board, color, row, col)
                     yield [new_board, (row, col)]
 
 next_move = (None, None)

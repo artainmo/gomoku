@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from src.verify_pawns import verify_winning_alignment, verify_capture, \
+from src.verify_pawns import verify_winning_alignment, verify_capture_position, \
             verify_captured_position, num_free_three_alignments
 
 app = Flask(__name__)
@@ -75,8 +75,7 @@ def place_pawn():
                 not verify_captured_position(board, turn, row, col) and \
                 num_free_three_alignments(board, turn, row, col) < 2:
         board.set_position(row, col, turn)
-        if verify_capture(board, turn):
-            board.captures[turn] += 1
+        board.captures[turn] += verify_capture_position(board, turn, row, col)
         turn = 'black' if turn == 'white' else 'white'
     else:
         return ('', 204) #Don't return anything if no pawn is placed

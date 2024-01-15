@@ -73,6 +73,24 @@ def verify_captured_position(board, captured_color, row, col):
             return True
     return False
 
+def verify_capture_position(board, capture_color, row, col):
+    captured_color = 'black' if capture_color == 'white' else 'white'
+    capture = 0
+    for neighbour in all_neighbouring_pawns(board, captured_color, row, col):
+        print(neighbour)
+        row_angle = row - neighbour["row"]
+        col_angle = col - neighbour["col"]
+        row_next_pos = neighbour["row"] - row_angle
+        col_next_pos = neighbour["col"] - col_angle
+        row_2next_pos = neighbour["row"] - (row_angle * 2)
+        col_2next_pos = neighbour["col"] - (col_angle * 2)
+        if board.get_position_value(row_next_pos, col_next_pos) == captured_color and \
+                board.get_position_value(row_2next_pos, col_2next_pos) == capture_color:
+            board.set_position(neighbour["row"], neighbour["col"], None)
+            board.set_position(row_next_pos, col_next_pos, None)
+            capture += 1
+    return capture
+
 def alignments_with_max_one_hole(board, color, row1, col1, row2, col2, remember=None):
     alignment = 1
     empty_position = 1
