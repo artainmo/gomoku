@@ -8,9 +8,15 @@ I will use python as it is more convenient for algorithm/AI projects.<br>
 As web framework I will use python flask over python django as python flask is sufficient for what I need and is faster to setup.
 
 ## Use
-Run flask app on 127.0.0.1:5000: `flask --app Gomoku run`.
+Run flask app on 127.0.0.1:5000:
+```
+flask --app Gomoku run
+```
 
-Launch with hot-reload and logs from algorithm in terminal: `flask --app Gomoku --debug run`.
+Launch with hot-reload and logs from algorithm in terminal:
+```
+flask --app Gomoku --debug run
+```
 
 If access to 127.0.0.1 gets denied:
 * Go to 'chrome://net-internals/#sockets' and flush socket pools.
