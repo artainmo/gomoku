@@ -38,6 +38,7 @@ Alpha-beta pruning is a technique used in a minimax algorithm to make it faster
 by preventing computations that are not necessary as they would not affect the outcome.
 
 ## Resources
+[artainmo - python bootcamp](https://github.com/artainmo/python_bootcamp)<br>
 [codecademy - Learn Flask](https://www.codecademy.com/learn/learn-flask)<br>
 [wikipedia - Go](https://en.wikipedia.org/wiki/Go_%28game%29)<br>
 [youtube - How to play Gomoku (5 in a row)](https://www.youtube.com/watch?v=-KD743yNDHc)<br>
