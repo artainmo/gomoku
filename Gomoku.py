@@ -94,5 +94,5 @@ def AI_play():
         empty_board = False
         next_move = (board.rows//2, board.cols//2)
     else:
-        next_move = run_minimax(board, 1)
+        next_move = run_minimax(board, 2)
     return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1]), code=307) #code set to 307 allows redirect to POST route

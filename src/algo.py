@@ -60,6 +60,11 @@ def find_score_alignment(board, color, row, col, remember):
             modulate -= 0.1
         if hole == 2:
             power -= 1
+        #The two following ifs try to force AI into stopping the player from winning when he is about to
+        if color == "white" and alignment == 4 and (open_start or open_end):
+            power += 1
+        elif color == "white" and alignment == 3 and open_start and open_end:
+            power += 1
         score = (base ** power) * modulate
         scores.append(score)
         if visualize and color == "black":
@@ -76,7 +81,7 @@ def find_score_alignment(board, color, row, col, remember):
                 "closest closing alignment": decay_factor,
                 "score": score
             })
-    return max(scores)
+    return sum(scores)
 
 def heuristic(board, color):
     score = 0
