@@ -147,16 +147,20 @@ def alignment_open_for_five_and_future_end(board, color, row_start, col_start, r
     decay_factor1 = 0
     decay_factor2 = 0
     if open_start:
-        while board.get_position_value(row_start, col_start) == None or \
-                board.get_position_value(row_start, col_start) == color:
+        while board.get_position_value(row_start, col_start) == color or \
+                board.get_position_value(row_start, col_start) == None: #and \ # In theory those conditions should be present too. But they slow down the algorithm too much and are not of high importance thus I removed them.
+                #not verify_captured_position(board, color, row_start, col_start) and \
+                #num_free_three_alignments(board, color, row_start, row_start) < 2):
             row_start -= row_angle
             col_start -= row_angle
             decay_factor1 += 1
             if alignment + hole + decay_factor1 >= 5 and decay_factor1 > 3:
                 break
     if open_end:
-        while board.get_position_value(row_end, col_end) == None or \
-                board.get_position_value(row_end, col_end) == color:
+        while board.get_position_value(row_end, col_end) == color or \
+                board.get_position_value(row_end, col_end) == None: #and \
+                #not verify_captured_position(board, color, row_end, col_end) and \
+                #num_free_three_alignments(board, color, row_end, col_end) < 2):
             row_start += row_angle
             col_start += row_angle
             decay_factor2 += 1

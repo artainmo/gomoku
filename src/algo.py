@@ -11,7 +11,7 @@ def find_score_alignment(board, color, row, col, remember):
     for rem in remember:
         if rem["row"] == row and rem["col"] == col:
             return 0
-    scores = []
+    score = 0
     next_neighbour_positions = [
         { "row": row, "col": col+1 },
         { "row": row+1, "col": col+1},
@@ -50,9 +50,9 @@ def find_score_alignment(board, color, row, col, remember):
         #     score += 10 * 2
         ## Using formula to handle all 32 cases instead
         base = 10
-        power = alignment
+        power = min(5, alignment)
         modulate = 1
-        if (open_start and not open_end) or (not open_start and open_end):
+        if alignment < 5 and ((open_start and not open_end) or (not open_start and open_end)):
             power -= 1
         elif decay_factor < 5 - alignment:
             modulate -= 0.1
@@ -62,26 +62,11 @@ def find_score_alignment(board, color, row, col, remember):
             power -= 1
         #The two following ifs try to force AI into stopping the player from winning when he is about to
         if color == "white" and alignment == 4 and (open_start or open_end):
-            power += 1
+            power += 2
         elif color == "white" and alignment == 3 and open_start and open_end:
             power += 1
-        score = (base ** power) * modulate
-        scores.append(score)
-        if visualize and color == "black":
-            global potential_moves
-            potential_moves.append({
-                "color": color,
-                "position": (row, col),
-                "direcion": (neighbour["row"]-row, neighbour["col"]-col),
-                "alignment": alignment,
-                "holes": hole,
-                "open start": open_start,
-                "open end": open_end,
-                "open for five": openForFive,
-                "closest closing alignment": decay_factor,
-                "score": score
-            })
-    return sum(scores)
+        score += (base ** power) * modulate
+    return score
 
 def heuristic(board, color):
     score = 0
@@ -127,7 +112,6 @@ next_move = (None, None)
 #The minimax algorithm will try out all possible positions for a certain amount of turns to find the best position for each turn and have the best game at the end of those turns.
 #It will find the best positions for itself while assuming the other player to also play the best moves possible.
 #Alpha and beta are used for the Alpha-beta pruning technique which fastens the minimax algorithm by stopping search of moves once we know we cannot find a better move.
-#Visualize the algorithm via this video (https://www.youtube.com/watch?v=l-hh51ncgDI)
 def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float('inf')):
     global next_move
     if depth == 0 or board.captures['white' if maximizingPlayer else 'black'] >= 5 \
@@ -138,13 +122,14 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         for [new_position_board, move] in generate_positions(board, 'black'): #We go over all next playable positions.
             eval = minimax(new_position_board, depth-1, False, alpha, beta) #We recursively call minimax to search for moves of next turns.
             if eval > maxEval:
-                # print("--------------")
-                # print("Depth: ", depth)
-                # print("maxEval: ", eval)
-                # print("alpha: ", eval)
-                # print("beta: ", beta)
-                # print("--------------")
                 maxEval = eval #We memorize the best move for us which has highest score from heuristic function.
+                if visualize:
+                    global potential_moves
+                    potential_moves.append({
+                        "color": "black",
+                        "move": move,
+                        "score": maxEval
+                    })
                 next_move = move
                 alpha = eval #Alpha refers to best score/move(s) of our player. While beta refers to worst score or best move of adversary.
                 #The lowest alpha value or worst score/move of our player will become the best move (worst score) of adversary which beta refers to.
@@ -160,12 +145,6 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         for [new_position_board, move] in generate_positions(board, 'white'):
             eval = minimax(new_position_board, depth-1, True, alpha, beta)
             if eval < minEval:
-                # print("--------------")
-                # print("Depth: ", depth)
-                # print("minEval: ", eval)
-                # print("alpha: ", alpha)
-                # print("beta: ", eval)
-                # print("--------------")
                 minEval = eval #We memorize the best move for the adversary which has lowest score from heuristic function.
                 beta = eval
                 #The highest beta value or worst move for adversary will become the best move for our player.
@@ -179,14 +158,7 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
 
 def print_move(move):
     print("color: ", move["color"])
-    print("position: ", move["position"])
-    print("direcion: ", move["direcion"])
-    print("alignment: ", move["alignment"])
-    print("holes: ", move["holes"])
-    print("open start: ", move["open start"])
-    print("open end: ", move["open end"])
-    print("open for five: ", move["open for five"])
-    print("closest closing alignment: ", move["closest closing alignment"])
+    print("move: ", move["move"])
     print("score: ", move["score"])
     print()
 
@@ -194,17 +166,11 @@ def run_minimax(board, depth):
     minimax(board, depth)
     if visualize:
         global potential_moves
-        print("ALL REVIEWED MOVES")
-        rem = []
-        for move in potential_moves:
-            if move["position"] not in rem:
-                rem.append(move["position"])
-                print(move["position"], end=", ")
-        print("\n")
         print("BEST POTENTIAL MOVES")
         potential_moves.sort(key=lambda x:x["score"], reverse=True)
-        print_move(potential_moves[0])
-        print_move(potential_moves[1])
-        print_move(potential_moves[2])
+        for i, potential_move in enumerate(potential_moves):
+            print_move(potential_move)
+            if i == 2:
+                break
         potential_moves = []
     return next_move

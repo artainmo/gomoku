@@ -31,7 +31,7 @@ class Board():
 board = Board()
 empty_board = True
 turn = None
-win = None
+win = (None, None)
 play_against_AI = False
 
 @app.route('/', methods=["GET", "POST"])
@@ -57,7 +57,7 @@ def stop():
     global empty_board
     board = Board()
     turn = None
-    win = None
+    win = (None, None)
     board.captures["white"] = 0
     board.captures["black"] = 0
     play_against_AI = False
@@ -82,7 +82,10 @@ def place_pawn():
         return ('', 204) #Don't return anything if no pawn is placed
     if turn and (board.captures['black' if turn == 'white' else 'white'] >= 5 \
                 or verify_winning_alignment(board, turn)): #verify previous color to give chance to losing color of capturing a pair and breaking alignment of winning color
-        win = turn
+        if board.captures['black' if turn == 'white' else 'white'] >= 5:
+            win = ("white", "capture") if turn == "black" else ("black", "capture")
+        else:
+            win = (turn, "alignment")
         turn = None
     # print(heuristic(board, 'black'))
     return redirect(url_for('index'))

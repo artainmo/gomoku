@@ -2,8 +2,8 @@
 
 {% block base %}
 <div class="container-center">
-	{% if win %}
-		<h1 class="align">{{win | title}} won!</h1>
+	{% if win[0] %}
+		<h1 class="align">{{win[0] | title}} won by {{win[1]}}!</h1>
 	{% elif turn %}
 		<h1 class="align-left">
 			{{turn | title}}'s turn
@@ -161,7 +161,7 @@
 </table>
 <br>
 <br>
-{% if turn or win %}
+{% if turn or win[0] %}
 	<form action="{{ url_for('stop') }}" method="GET" class="center-screen">
 		<input type="submit" value="Stop Game">
 	</form>
