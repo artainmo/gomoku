@@ -72,9 +72,11 @@ def stop():
 def place_pawn():
     global turn
     global win
-    starting_time = 0
     row = int(request.args.get('row'))
     col = int(request.args.get('col'))
+    origin = request.args.get('origin')
+    if play_against_AI and turn == 'black' and origin != "API": #Don't allow player to place black pawn before AI plays
+        return redirect(url_for('AI_play'), code=307)
     if turn and board.get_position_value(row, col) == None and \
                 not verify_captured_position(board, turn, row, col) and \
                 num_free_three_alignments(board, turn, row, col) < 2:
@@ -82,7 +84,7 @@ def place_pawn():
         board.captures[turn] += verify_capture_position(board, turn, row, col)
         turn = 'black' if turn == 'white' else 'white'
     else:
-        return ('', 204) #Don't return anything if no pawn is placed
+        return ('', 204) #Don't return anything if position is prohibited
     if turn and (board.captures['black' if turn == 'white' else 'white'] >= 5 \
                 or verify_winning_alignment(board, turn)): #verify previous color to give chance to losing color of capturing a pair and breaking alignment of winning color
         if board.captures['black' if turn == 'white' else 'white'] >= 5:
@@ -102,4 +104,5 @@ def AI_play():
         next_move = (board.rows//2, board.cols//2)
     else:
         next_move, potential_moves = run_minimax(board, 2)
-    return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1]), code=307) #code set to 307 allows redirect to POST route
+    return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1],
+                origin="API"), code=307) #code set to 307 allows redirect to POST route
