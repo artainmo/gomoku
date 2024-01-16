@@ -13,7 +13,7 @@ Run flask app on 127.0.0.1:5000:
 make
 ```
 
-Launch with hot-reload and logs from algorithm in terminal:
+Launch with hot-reload and see contemplated AI moves via mouse hovering over positions:
 ```
 make debug
 ```

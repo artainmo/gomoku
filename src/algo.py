@@ -63,7 +63,6 @@ def find_score_alignment(board, color, row, col, remember):
         #The two following ifs try to force AI into stopping the player from winning when he is about to
         if color == "white" and alignment > 3 and (open_start or open_end):
             power += 1
-            modulate += 1
         elif color == "white" and alignment == 3 and open_start and open_end:
             power += 1
         score += (base ** power) * modulate
@@ -121,15 +120,15 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
         maxEval = float('-inf')
         for [new_position_board, move] in generate_positions(board, 'black'): #We go over all next playable positions.
             eval = minimax(new_position_board, depth-1, False, alpha, beta) #We recursively call minimax to search for moves of next turns.
+            if visualize:
+                global potential_moves
+                potential_moves[(move[0] * board.cols) + move[1]] = {
+                    "color": "black",
+                    "move": move,
+                    "score": eval
+                }
             if eval > maxEval:
                 maxEval = eval #We memorize the best move for us which has highest score from heuristic function.
-                if visualize:
-                    global potential_moves
-                    potential_moves.append({
-                        "color": "black",
-                        "move": move,
-                        "score": maxEval
-                    })
                 next_move = move
                 alpha = eval #Alpha refers to best score/move(s) of our player. While beta refers to worst score or best move of adversary.
                 #The lowest alpha value or worst score/move of our player will become the best move (worst score) of adversary which beta refers to.
@@ -163,14 +162,19 @@ def print_move(move):
     print()
 
 def run_minimax(board, depth):
-    minimax(board, depth)
     if visualize:
         global potential_moves
-        print("BEST POTENTIAL MOVES")
-        potential_moves.sort(key=lambda x:x["score"], reverse=True)
-        for i, potential_move in enumerate(potential_moves):
-            print_move(potential_move)
-            if i == 2:
-                break
-        potential_moves = []
-    return next_move
+        potential_moves = [{
+            "color": None,
+            "move": None,
+            "score": None
+        } for _ in range(board.rows * board.cols)]
+    minimax(board, depth)
+    # if visualize:
+    #     # print("BEST POTENTIAL MOVES")
+    #     # potential_moves.sort(key=lambda x:x["score"], reverse=True)
+    #     # for i, potential_move in enumerate(potential_moves):
+    #     #     print_move(potential_move)
+    #     #     if i == 2:
+    #     #         break
+    return next_move, potential_moves

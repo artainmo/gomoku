@@ -33,11 +33,13 @@ empty_board = True
 turn = None
 win = (None, None)
 play_against_AI = False
+potential_moves = []
 
 @app.route('/', methods=["GET", "POST"])
 def index():
     return render_template("game.html", board_size=45, board=board,
-                turn=turn, win=win, play_against_AI=play_against_AI)
+                turn=turn, win=win, play_against_AI=play_against_AI, \
+                potential_moves=potential_moves)
 
 @app.route('/start', methods=["POST"])
 def start():
@@ -55,6 +57,7 @@ def stop():
     global win
     global play_against_AI
     global empty_board
+    global potential_moves
     board = Board()
     turn = None
     win = (None, None)
@@ -62,6 +65,7 @@ def stop():
     board.captures["black"] = 0
     play_against_AI = False
     empty_board = True
+    potential_moves = []
     return redirect(url_for('index'))
 
 @app.route('/place_pawn', methods=["POST"])
@@ -92,9 +96,10 @@ def place_pawn():
 @app.route('/AI_play', methods=["POST"])
 def AI_play():
     global empty_board
+    global potential_moves
     if empty_board:
         empty_board = False
         next_move = (board.rows//2, board.cols//2)
     else:
-        next_move = run_minimax(board, 2)
+        next_move, potential_moves = run_minimax(board, 2)
     return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1]), code=307) #code set to 307 allows redirect to POST route

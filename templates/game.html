@@ -192,4 +192,17 @@
 		document.AI_play.submit();
 	</script>
 {% endif %}
+{% if potential_moves != [] %}
+	<script>
+		const inputElementsOfTypeImage = document.querySelectorAll('input[type="image"]');
+
+		{% for potential_move in potential_moves %}
+			var display = "Color: " + "{{potential_move['color']}}" + "\n" +
+							"Move: " + "{{potential_move['move']}}" + "\n" +
+							"Score: " + "{{potential_move['score']}}";
+			inputElementsOfTypeImage["{{ loop.index0 }}"].setAttribute('title', display);
+		{% endfor %}
+
+	</script>
+{% endif %}
 {% endblock %}

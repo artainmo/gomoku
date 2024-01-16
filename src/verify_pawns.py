@@ -77,7 +77,6 @@ def verify_capture_position(board, capture_color, row, col):
     captured_color = 'black' if capture_color == 'white' else 'white'
     capture = 0
     for neighbour in all_neighbouring_pawns(board, captured_color, row, col):
-        print(neighbour)
         row_angle = row - neighbour["row"]
         col_angle = col - neighbour["col"]
         row_next_pos = neighbour["row"] - row_angle
