@@ -89,12 +89,13 @@ def generate_positions(board, color):
         for col in range(board.cols):
             next_neighbour_positions = [
                 { "row": row, "col": col+1 },
-                { "row": row+1, "col": col+1},
-                { "row": row+1, "col": col},
-                { "row": row+1, "col": col-1},
-                { "row": row, "col": col-1},
-                { "row": row-1, "col": col-1},
-                { "row": row-1, "col": col}
+                { "row": row+1, "col": col+1 },
+                { "row": row+1, "col": col },
+                { "row": row+1, "col": col-1 },
+                { "row": row, "col": col-1 },
+                { "row": row-1, "col": col-1 },
+                { "row": row-1, "col": col },
+                { "row": row-1, "col": col+1 }
             ]
             if any(board.get_position_value(neighbour["row"], neighbour["col"])
                         in ["white", "black"] for neighbour in next_neighbour_positions): #Only review positions who are next to actual stones

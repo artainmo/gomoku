@@ -60,7 +60,8 @@ def all_neighbouring_pawns(board, color, row, col):
         { "row": row+1, "col": col-1},
         { "row": row, "col": col-1},
         { "row": row-1, "col": col-1},
-        { "row": row-1, "col": col}
+        { "row": row-1, "col": col},
+        { "row": row-1, "col": col+1 }
     ]
     for neighbour in next_neighbour_positions:
         if board.get_position_value(neighbour["row"], neighbour["col"]) == color:
