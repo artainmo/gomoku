@@ -92,6 +92,9 @@ def place_pawn():
         else:
             win = (turn, "alignment")
         turn = None
+    if not play_against_AI:
+        global potential_moves
+        next_move, potential_moves = run_minimax(board, 2, True)
     # print(heuristic(board, 'black'))
     return redirect(url_for('index'))
 
@@ -103,6 +106,6 @@ def AI_play():
         empty_board = False
         next_move = (board.rows//2, board.cols//2)
     else:
-        next_move, potential_moves = run_minimax(board, 2)
+        next_move, potential_moves = run_minimax(board, 2, app.config['DEBUG'])
     return redirect(url_for('place_pawn', row=next_move[0], col=next_move[1],
                 origin="API"), code=307) #code set to 307 allows redirect to POST route

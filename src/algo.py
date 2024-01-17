@@ -4,7 +4,7 @@ from src.verify_pawns import verify_winning_alignment, verify_capture_position, 
             alignment_score
 from Gomoku import app
 
-visualize = app.config['DEBUG']
+next_move = (None, None)
 potential_moves = []
 
 def find_score_alignment(board, color, row, col, remember):
@@ -107,12 +107,10 @@ def generate_positions(board, color):
                     new_board.captures[color] += verify_capture_position(new_board, color, row, col)
                     yield [new_board, (row, col)]
 
-next_move = (None, None)
-
 #The minimax algorithm will try out all possible positions for a certain amount of turns to find the best position for each turn and have the best game at the end of those turns.
 #It will find the best positions for itself while assuming the other player to also play the best moves possible.
 #Alpha and beta are used for the Alpha-beta pruning technique which fastens the minimax algorithm by stopping search of moves once we know we cannot find a better move.
-def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float('inf')):
+def minimax(board, depth, visualize, maximizingPlayer=True, alpha=float('-inf'), beta=float('inf')):
     global next_move
     if depth == 0 or board.captures['white' if maximizingPlayer else 'black'] >= 5 \
                 or verify_winning_alignment(board, 'black' if maximizingPlayer else 'white'): #After going through all turns or after the game ends it will stop searching and return the evaluation of current game.
@@ -120,7 +118,7 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
     if maximizingPlayer: #Here we will search the best move for the player we want to win.
         maxEval = float('-inf')
         for [new_position_board, move] in generate_positions(board, 'black'): #We go over all next playable positions.
-            eval = minimax(new_position_board, depth-1, False, alpha, beta) #We recursively call minimax to search for moves of next turns.
+            eval = minimax(new_position_board, depth-1, visualize, False, alpha, beta) #We recursively call minimax to search for moves of next turns.
             if visualize:
                 global potential_moves
                 potential_moves[(move[0] * board.cols) + move[1]] = {
@@ -143,7 +141,7 @@ def minimax(board, depth, maximizingPlayer=True, alpha=float('-inf'), beta=float
     else: #Here we will search the best move for the adversary as we assume he will play his best moves.
         minEval = float('inf')
         for [new_position_board, move] in generate_positions(board, 'white'):
-            eval = minimax(new_position_board, depth-1, True, alpha, beta)
+            eval = minimax(new_position_board, depth-1, visualize, True, alpha, beta)
             if eval < minEval:
                 minEval = eval #We memorize the best move for the adversary which has lowest score from heuristic function.
                 beta = eval
@@ -162,7 +160,7 @@ def print_move(move):
     print("score: ", move["score"])
     print()
 
-def run_minimax(board, depth):
+def run_minimax(board, depth, visualize):
     if visualize:
         global potential_moves
         potential_moves = [{
@@ -170,7 +168,7 @@ def run_minimax(board, depth):
             "move": None,
             "score": None
         } for _ in range(board.rows * board.cols)]
-    minimax(board, depth)
+    minimax(board, depth, visualize)
     # if visualize:
     #     # print("BEST POTENTIAL MOVES")
     #     # potential_moves.sort(key=lambda x:x["score"], reverse=True)
