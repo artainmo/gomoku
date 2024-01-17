@@ -92,7 +92,7 @@ def place_pawn():
         else:
             win = (turn, "alignment")
         turn = None
-    if not play_against_AI:
+    if app.config['DEBUG'] and not play_against_AI:
         global potential_moves
         next_move, potential_moves = run_minimax(board, 2, True)
     # print(heuristic(board, 'black'))
